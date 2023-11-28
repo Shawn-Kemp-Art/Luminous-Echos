@@ -38,7 +38,7 @@ var qo = new URLSearchParams(window.location.search).get('orientation'); //chang
 var qm = new URLSearchParams(window.location.search).get('cutmarks'); //any value turns on cutmarks and hangers
 var qc = new URLSearchParams(window.location.search).get('colors'); // number of colors
 
-var frC = R.random_int(1, 3); //random frame color white, mocha, or rainbow
+var frC = R.random_int(1, 4); //random frame color white, mocha, or rainbow
 var orient=R.random_int(1, 4); // decide on orientation 
 var halfsize = R.random_int(1, 6);
 
