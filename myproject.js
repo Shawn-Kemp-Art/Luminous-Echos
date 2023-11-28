@@ -1,11 +1,11 @@
 
-document.body.innerHTML = '<style>div{color: grey;text-align:center;position:absolute;margin:auto;top:0;right:0;bottom:0;left:0;width:500px;height:100px;}</style><body><div id="loading"><h1>Ray Drops</h1><p>This could take a while, please give it at least 5 minutes to render.</p><br><h1 class="spin">⏳</h1><br><h3>Press <strong>?</strong> for shortcut keys</h3><br><p><small>Output contains an embedded blueprint for creating an IRL wall sculpture</small></p></div></body>';
+document.body.innerHTML = '<style>div{color: grey;text-align:center;position:absolute;margin:auto;top:0;right:0;bottom:0;left:0;width:500px;height:100px;}</style><body><div id="loading"><p>This could take a while, please give it at least 5 minutes to render.</p><br><h1 class="spin">⏳</h1><br><h3>Press <strong>?</strong> for shortcut keys</h3><br><p><small>Output contains an embedded blueprint for creating an IRL wall sculpture</small></p></div></body>';
 paper.install(window);
 window.onload = function() {
 
 document.body.innerHTML = '<style>body {margin: 0px;text-align: center;}</style><canvas resize="true" style="display:block;width:100%;" id="myCanvas"></canvas>';
 
-setquery("fxhash",fxhash);
+setquery("fxhash",$fx.hash);
 var initialTime = new Date().getTime();
 
 var canvas = document.getElementById("myCanvas");
@@ -13,7 +13,7 @@ var canvas = document.getElementById("myCanvas");
 paper.setup('myCanvas');
 paper.activate();
 
-console.log(tokenData.hash)
+//console.log(tokenData.hash)
 console.log('#'+$fx.iteration)
 
 canvas.style.background = "white";
@@ -24,47 +24,6 @@ var seed = Math.floor($fx.rand()*10000000000000000);
 //initialize perlin noise 
 var noise = new perlinNoise3d();
 noise.noiseSeed(seed);
-
-/*
-//fxparams
-$fx.params([
-  {
-    id: "number_ripples",
-    name: "Dahlias",
-    type: "number",
-    default: R.random_int(1, 2),
-    options: {
-      min: 0,
-      max: 5,
-      step: 1,
-    },
-  },
-  {
-    id: "Style",
-    name: "Style",
-    type: "select",
-    default: "Vertical Lines",
-    options: {
-      options: ["Vertical Lines", "Horizontal Lines", "Hex", "Rings", "Diamonds", "Triangles", "Waves"],
-    },
-  },
-  {
-    id: "density",
-    name: "Density",
-    type: "number",
-    default: R.random_int(2, 8),
-    options: {
-      min: 1,
-      max: 15,
-      step: 1,
-    },
-  },
-  
-])
-*/
-
-
-
 
 
 //read in query strings
@@ -80,18 +39,13 @@ var qm = new URLSearchParams(window.location.search).get('cutmarks'); //any valu
 var qc = new URLSearchParams(window.location.search).get('colors'); // number of colors
 var qb = new URLSearchParams(window.location.search).get('pattern');// background style
 
-var testingGo = new URLSearchParams(window.location.search).get('testing');// Run generative tests
-
 var frC = R.random_int(1, 3); //random frame color white, mocha, or rainbow
 var orient=R.random_int(1, 4); // decide on orientation 
-//orient=2;
 var halfsize = R.random_int(1, 5);
 
 //Set the properties for the artwork where 100 = 1 inch
 var wide = 800; 
 if (halfsize == 1 && orient != 2){wide=400;}
-    //if($fx.getParam("aspect_ratio") == "2:5"){wide=400};
-    //if($fx.getParam("aspect_ratio") == "1:1"){wide=1000};
     if (qw){wide=qw*100};
 var high = 1000; 
     if (qh){high=qh*100};
@@ -103,12 +57,10 @@ var ratio = 1/scale;//use 1/4 for 32x40 - 1/3 for 24x30 - 1/2 for 16x20 - 1/1 fo
 
 var minOffset = ~~(7*ratio); //this is aproximatly .125"
 var framewidth = ~~(R.random_int(125, 200)*ratio); 
-//var framewidth = ~~(125*ratio); 
     if (qfw){framewidth=qfw};
 
 var framradius = 0;
 var stacks = R.random_int(12, 12);
-    //stacks = $fx.getParam("number_layers"); 
     if (ql){stacks=parseInt(ql)};
 console.log(stacks+" layers");
 
@@ -121,20 +73,18 @@ paper.view.viewSize.height = 2400;
 
 
 var colors = []; var palette = []; 
+
 var woodframe = new Path();var framegap = new Path();
-var frameColor = "#60513D"
-//var petalspiky = R.random_int(5, 15);
+var frameColor = frameColors[R.random_int(0, frameColors.length-1)].Hex;
+
 
 
 numofcolors = R.random_int(2, stacks);; //Sets the number of colors to pick for the pallete
-//numofcolors = $fx.getParam("number_colors");
 if (qc){numofcolors = qc};
 console.log(numofcolors+" colors");
 
 //adjust the canvas dimensions
 w=wide;h=high;
-//if ($fx.getParam("orientation")=="Landscape"){wide = h;high = w;orientation="Landscape";}
-//else if ($fx.getParam("orientation")=="Square"){wide = w;high = w;orientation="Square";}
 var orientation="Portrait";
 
 if (orient==1){wide = h;high = w;orientation="Landscape";};
@@ -151,7 +101,6 @@ console.log(orientation+': '+~~(wide/100/ratio)+' x '+~~(high/100/ratio))
 var origin = new Point(R.random_int(0, wide), R.random_int(0, high));
 var spokes = R.random_int(6, 30)
 var wavyness = R.random_int(10, 250);
-//var distribution = ~~(noise.get(50)*(high+wide));
 var distribution = R.random_int(200, ~~(Math.sqrt(high*high+wide*wide)));
 var swirly = R.random_int(5, 50);
 
@@ -178,14 +127,11 @@ if (frC==2){colors[stacks-1]={"Hex":"#4C4638", "Name":"Mocha"}};
 //Set the line color
 linecolor={"Hex":"#4C4638", "Name":"Mocha"};
 
-//colors[stacks-2]={"Hex":"#FFFFFF", "Name":"Smooth White"};
-
 
 //************* Draw the layers ************* 
 
 
 sheet = []; //This will hold each layer
-
 
 
 var px=0;var py=0;var pz=0;var prange=.1; 
@@ -200,7 +146,6 @@ var longestDim = wide;if (wide<high){longestDim=high;}
 for (z = 0; z < stacks; z++) {
     pz=z*prange;
     drawFrame(z); // Draw the initial frame
-    //if(z==0){solid(z)}
 
          //-----Draw each layer
         if(z<stacks-1){
@@ -245,18 +190,19 @@ for (z = 0; z < stacks; z++) {
     }
     console.log(features);
     $fx.features(features);
-    //$fx.preview();
 
     floatingframe();
-    upspirestudio(features); //#render and send features to upspire.studio
+    
+    //$fx.preview();
+
+    
+    //upspirestudio(features); //#render and send features to upspire.studio
 
 
       var finalTime = new Date().getTime();
     var renderTime = (finalTime - initialTime)/1000
     console.log ('Render took : ' +  renderTime.toFixed(2) + ' seconds' );
 
-
-        if (testingGo == 'true'){refreshit();}
 
         async function refreshit() {
         //setquery("fxhash",null);
@@ -292,8 +238,7 @@ function rays(z){
                 lines.add(p[5]); 
                 lines.add(p[6]); 
                 lines.add(p[7]); 
-                lines.add(p[8]);  
-                //lines = new Path.Line (p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8]);          
+                lines.add(p[8]);        
                 lines.simplify(); lines.smooth(); 
 
                 
@@ -323,11 +268,9 @@ function rays(z){
                 mesh.rotate(~~(365/spokes*l),p[0]);
                 mesh.position.x += origin.x;
                 mesh.position.y += origin.y;
-
                 join(z,mesh)
-                //sheet[z] = mesh.unite(sheet[z]);
                 mesh.remove();  
-                //project.activeLayer.children[project.activeLayer.children.length-2].remove();
+
             }
 
 }
@@ -361,7 +304,7 @@ function floatingframe(){
         woodframe.scale(2.2);
         woodframe.position = new Point(paper.view.viewSize.width/2, paper.view.viewSize.height/2);
         var framegroup = new Group(woodframe);
-        woodframe.style = {fillColor: frameColor, strokeColor: frameColor, strokeWidth: 1*ratio,shadowColor: new Color(0,0,0,[0.5]),shadowBlur: 20,shadowOffset: new Point(10*2.2, 10*2.2)};
+        woodframe.style = {fillColor: frameColor, strokeColor: "#1A1A1A", strokeWidth: 2*ratio,shadowColor: new Color(0,0,0,[0.5]),shadowBlur: 20,shadowOffset: new Point(10*2.2, 10*2.2)};
     } else {woodframe.removeChildren()} 
 }
 
@@ -484,7 +427,7 @@ document.addEventListener('keypress', (event) => {
 
        //Save as SVG 
        if(event.key == "v") {
-            fileName = tokenData.hash;
+            fileName = $fx.hash;
             var url = "data:image/svg+xml;utf8," + encodeURIComponent(paper.project.exportSVG({asString:true}));
             var key = [];for (l=stacks;l>0;l--){key[stacks-l] = colors[l-1].Name;}; 
             var svg1 = "<!--"+key+"-->" + paper.project.exportSVG({asString:true})
@@ -558,7 +501,7 @@ document.addEventListener('keypress', (event) => {
         
         //Save as PNG
         if(event.key == "p") {
-            canvas.toBlob(function(blob) {saveAs(blob, tokenData.hash+'.png');});
+            canvas.toBlob(function(blob) {saveAs(blob, $fx.hash+'.png');});
             }
 
         //Export colors as txt
