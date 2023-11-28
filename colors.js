@@ -64,6 +64,7 @@ var frameColors = [
 {"Hex":"#f9f9f9","Name":"White"},
 {"Hex":"#c0c0c0", "Name":"Silver"},
 {"Hex":"#4C46380", "Name":"Black"},
+{"Hex":"#4b2110", "Name":"Burgundy"},
 ]
 
 var allColors = [

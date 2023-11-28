@@ -37,11 +37,10 @@ var qph  = new URLSearchParams(window.location.search).get('lh'); //read explode
 var qo = new URLSearchParams(window.location.search).get('orientation'); //change orientation
 var qm = new URLSearchParams(window.location.search).get('cutmarks'); //any value turns on cutmarks and hangers
 var qc = new URLSearchParams(window.location.search).get('colors'); // number of colors
-var qb = new URLSearchParams(window.location.search).get('pattern');// background style
 
 var frC = R.random_int(1, 3); //random frame color white, mocha, or rainbow
 var orient=R.random_int(1, 4); // decide on orientation 
-var halfsize = R.random_int(1, 5);
+var halfsize = R.random_int(1, 6);
 
 //Set the properties for the artwork where 100 = 1 inch
 var wide = 800; 
@@ -56,7 +55,7 @@ var scale = 2;
 var ratio = 1/scale;//use 1/4 for 32x40 - 1/3 for 24x30 - 1/2 for 16x20 - 1/1 for 8x10
 
 var minOffset = ~~(7*ratio); //this is aproximatly .125"
-var framewidth = ~~(R.random_int(125, 200)*ratio); 
+var framewidth = ~~(R.random_int(125, 300)*ratio); 
     if (qfw){framewidth=qfw};
 
 var framradius = 0;
@@ -75,9 +74,9 @@ paper.view.viewSize.height = 2400;
 var colors = []; var palette = []; 
 
 var woodframe = new Path();var framegap = new Path();
-var frameColor = frameColors[R.random_int(0, frameColors.length-1)].Hex;
-
-
+var fColor = frameColors[R.random_int(0, frameColors.length-1)];
+var frameColor = fColor.Hex;
+console.log("Frame Color: "+fColor.Name);
 
 numofcolors = R.random_int(2, stacks);; //Sets the number of colors to pick for the pallete
 if (qc){numofcolors = qc};
@@ -195,17 +194,12 @@ for (z = 0; z < stacks; z++) {
     
     //$fx.preview();
 
-    
-    //upspirestudio(features); //#render and send features to upspire.studio
-
-
       var finalTime = new Date().getTime();
     var renderTime = (finalTime - initialTime)/1000
     console.log ('Render took : ' +  renderTime.toFixed(2) + ' seconds' );
 
 
         async function refreshit() {
-        //setquery("fxhash",null);
         await new Promise(resolve => setTimeout(resolve, 5000)); // 3 sec
         canvas.toBlob(function(blob) {saveAs(blob, tokenData.hash+' - '+renderTime.toFixed(0)+'secs.png');});
         await new Promise(resolve => setTimeout(resolve, 5000)); // 3 sec
@@ -244,7 +238,6 @@ function rays(z){
                 
 
                 mesh = PaperOffset.offsetStroke(lines, minOffset,{ cap: 'butt' });
-                 //mesh.position += origin;
                 mesh.flatten(4);
                 mesh.smooth();
                 lines.remove();
@@ -252,9 +245,7 @@ function rays(z){
                 for (n=2;n<7;n++){
                     if (noise.get(l,n,z)>.4){
                         var circlePath = new Path.Circle(p[n-1], noise.get(l,n)*(minOffset*2)*(z+1));
-                        mesh = mesh.subtract(circlePath);
-                        
-                        
+                        mesh = mesh.subtract(circlePath);        
                         ring = PaperOffset.offsetStroke(circlePath, minOffset, { cap: 'round' })
                         mesh = mesh.unite(ring);
                         ring.remove();
@@ -331,10 +322,6 @@ function cut(z,s){
 function drawFrame(z){
     var outsideframe = new Path.Rectangle(new Point(0, 0),new Size(wide, high), framradius)
     var insideframe = new Path.Rectangle(new Point(framewidth, framewidth),new Size(wide-framewidth*2, high-framewidth*2)) 
-    //var outsideframe = new Path.Circle(new Point(wide/2, wide/2),wide/2);
-    //var insideframe = new Path.Circle(new Point(wide/2, wide/2),wide/2-framewidth);
-
-
     sheet[z] = outsideframe.subtract(insideframe);
     outsideframe.remove();insideframe.remove();
 }
@@ -370,7 +357,6 @@ function frameIt(z){
         frame.remove();
         project.activeLayer.children[project.activeLayer.children.length-2].remove();
          
-        
         sheet[z].style = {fillColor: colors[z].Hex, strokeColor: linecolor.Hex, strokeWidth: 1*ratio,shadowColor: new Color(0,0,0,[0.3]),shadowBlur: 20,shadowOffset: new Point((stacks-z)*2.3, (stacks-z)*2.3)};
 }
 
@@ -416,7 +402,7 @@ function hanger (z){
 
 
 //--------- Interaction functions -----------------------
-var interactiontext = "Interactions\nB = Blueprint mode\nV = Export SVG\nP = Export PNG\nC = Export colors as TXT\nE = Show layers\n"
+var interactiontext = "Interactions\nb = Blueprint mode\nv = Export SVG\np = Export PNG\nc = Export colors as TXT\ne = Show layers\nf = Remove frame\n"
 
 view.onDoubleClick = function(event) {
     console.log("png")
@@ -450,7 +436,6 @@ document.addEventListener('keypress', (event) => {
             }    
 
 
-
        //Format for Lightburn
        if(event.key == "b") {
         floatingframe();
@@ -459,28 +444,9 @@ document.addEventListener('keypress', (event) => {
                 sheet[z].selected = true;}
             }
 
-            //new hash
-           if(event.key == " ") {
-                setquery("fxhash",null);
-                location.reload();
-                }
-
-            //toggle half vs full width
-            if(event.key == "0") {
-            if(w){setquery("w",null);}
-            if(wide==800) {setquery("w","4");}
-            location.reload();
-            }
-
-        //scale
-       if(event.key == "1" || event.key =="2" ||event.key =="3" || event.key =="4") {
-            setquery("scale",event.key);
-            location.reload();
-            }
-
-        //oriantation
-       if(event.key == "w" || event.key =="t" ||event.key =="s" ) {
-            setquery("orientation",event.key);
+        //new hash
+        if(event.key == " ") {
+            setquery("fxhash",null);
             location.reload();
             }
 
@@ -488,17 +454,7 @@ document.addEventListener('keypress', (event) => {
        if(event.key == "h" || event.key == "/") {
             alert(interactiontext);
             }
-
-  
-
-            //layers
-       if(event.key == "l") {
-            var l = prompt("How many layers", stacks);
-            setquery("layers",l);
-            location.reload();
-            }
-        
-        
+             
         //Save as PNG
         if(event.key == "p") {
             canvas.toBlob(function(blob) {saveAs(blob, $fx.hash+'.png');});
@@ -519,7 +475,8 @@ document.addEventListener('keypress', (event) => {
 
 
        //Explode the layers     
-       if(event.key == "e") {     
+       if(event.key == "e") {   
+            floatingframe();  
             h=0;t=0;maxwidth=3000;
                for (z=0; z<sheet.length; z++) { 
                sheet[z].scale(1000/2300)   
