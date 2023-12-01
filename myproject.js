@@ -191,7 +191,7 @@ for (z = 0; z < stacks; z++) {
     $fx.features(features);
 
     floatingframe();
-    
+    //$fx.fxpreview();
     //$fx.preview();
 
       var finalTime = new Date().getTime();
