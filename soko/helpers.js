@@ -21,3 +21,22 @@ function setquery(p,v){
     var newRelativePathQuery = window.location.pathname + '?' + searchParams.toString();
     history.pushState(null, '', newRelativePathQuery);
 };
+
+//#render and send features to upspire.studio
+ function upspirestudio(features) {
+        //Add a finished creating preview selector
+        var iDiv = document.createElement('div');
+        iDiv.id = 'render';
+        document.body.appendChild(iDiv);
+
+        if (features == null){features={};}
+        var genurl = window.location.href;
+        var attr = JSON.stringify(features).replace(/\"/g,"'")
+        var url = 'https://upspire.studio/api/1.1/wf/update-features';
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", url);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function () {if (xhr.readyState === 4) {console.log(xhr.status);console.log(xhr.responseText);}};
+        var data64 = '{"attributes":"'+attr+'","url":"'+genurl+'","hash":"'+$fx.hash+'"}';
+        xhr.send(data64);   
+    };
