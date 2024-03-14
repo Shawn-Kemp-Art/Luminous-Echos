@@ -102,12 +102,14 @@ var spokes = R.random_int(6, 30)
 var wavyness = R.random_int(10, 250);
 var distribution = R.random_int(600, ~~(Math.sqrt(high*high+wide*wide)));
 var swirly = R.random_int(5, 50);
+var dripRadius = R.random_int(0, 9);
 
 console.log("Origin: "+origin);
 console.log("Spokes: "+spokes);
 console.log("Wavyness: "+wavyness);
 console.log("Swirlyness: "+swirly);
 console.log("Distribution: "+distribution);
+console.log("Drip Radius: "+dripRadius);
 
 //Pick layer colors from a random pallete based on tint library
 for (var c=0; c<numofcolors; c=c+1){palette[c] = tints[R.random_int(0, tints.length-1)];};    
@@ -243,7 +245,7 @@ function rays(z){
                 mesh.smooth();
                 lines.remove();
                 
-                for (n=2;n<9;n++){
+                for (n=2;n<dripRadius;n++){
                     if (noise.get(l,n,z)>.5){
                         var circlePath = new Path.Circle(p[n-1], noise.get(l,n)*(minOffset*2)*(z+1));
                         mesh = mesh.subtract(circlePath);        
