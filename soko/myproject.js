@@ -55,7 +55,7 @@ var scale = 2;
 var ratio = 1/scale;//use 1/4 for 32x40 - 1/3 for 24x30 - 1/2 for 16x20 - 1/1 for 8x10
 
 var minOffset = ~~(7*ratio); //this is aproximatly .125"
-var framewidth = ~~(R.random_int(125, 300)*ratio); 
+var framewidth = ~~(R.random_int(125, 125)*ratio); 
     if (qfw){framewidth=qfw};
 
 var framradius = 0;
@@ -97,10 +97,10 @@ console.log(orientation+': '+~~(wide/100/ratio)+' x '+~~(high/100/ratio))
 
 
 //setup the project variables
-var origin = new Point(R.random_int(0, wide), R.random_int(0, high));
+var origin = new Point(R.random_int(-wide/4, wide+wide/4), R.random_int(-high/4, high+high/4));
 var spokes = R.random_int(6, 30)
 var wavyness = R.random_int(10, 250);
-var distribution = R.random_int(200, ~~(Math.sqrt(high*high+wide*wide)));
+var distribution = R.random_int(600, ~~(Math.sqrt(high*high+wide*wide)));
 var swirly = R.random_int(5, 50);
 
 console.log("Origin: "+origin);
@@ -214,14 +214,14 @@ function rays(z){
             p = [];
             for (l=0; l<spokes; l++){
                 p[0] =  new Point(0,0);
-                p[1] = new Point(~~(distribution*.2),~~(wavyness*(z/swirly)));
-                p[2] = new Point(~~(distribution*.3),~~(-wavyness*(z/swirly)));
-                p[3] = new Point(~~(distribution*.4),~~(wavyness*(z/swirly)));
-                p[4] = new Point(~~(distribution*.5),~~(-wavyness*(z/swirly)));
-                p[5] = new Point(~~(distribution*.6),~~(wavyness*(z/swirly)));
-                p[6] = new Point(~~(distribution*.7),~~(-wavyness*(z/swirly)));
-                p[7] = new Point(~~(distribution*.8),~~(wavyness*(z/swirly)));
-                p[8] = new Point(~~(Math.sqrt(high*high+wide*wide)),~~(-wavyness*(z/swirly)));
+                p[1] = new Point(~~(distribution*.2),~~(wavyness*((z+1)/swirly)));
+                p[2] = new Point(~~(distribution*.3),~~(-wavyness*((z+1)/swirly)));
+                p[3] = new Point(~~(distribution*.4),~~(wavyness*((z+1)/swirly)));
+                p[4] = new Point(~~(distribution*.5),~~(-wavyness*((z+1)/swirly)));
+                p[5] = new Point(~~(distribution*.6),~~(wavyness*((z+1)/swirly)));
+                p[6] = new Point(~~(distribution*.7),~~(-wavyness*((z+1)/swirly)));
+                p[7] = new Point(~~(distribution*.8),~~(wavyness*((z+1)/swirly)));
+                p[8] = new Point(~~(Math.sqrt(high*high+wide*wide)),~~(-wavyness*((z+1)/swirly)));
                 
                 lines = new Path();
                 lines.add(p[0]);
@@ -242,8 +242,8 @@ function rays(z){
                 mesh.smooth();
                 lines.remove();
                 
-                for (n=2;n<7;n++){
-                    if (noise.get(l,n,z)>.4){
+                for (n=2;n<9;n++){
+                    if (noise.get(l,n,z)>.5){
                         var circlePath = new Path.Circle(p[n-1], noise.get(l,n)*(minOffset*2)*(z+1));
                         mesh = mesh.subtract(circlePath);        
                         ring = PaperOffset.offsetStroke(circlePath, minOffset, { cap: 'round' })
