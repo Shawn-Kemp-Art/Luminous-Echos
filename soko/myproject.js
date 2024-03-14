@@ -191,6 +191,7 @@ for (z = 0; z < stacks; z++) {
     $fx.features(features);
 
     floatingframe();
+    upspirestudio(features); //#render and send features to upspire.studio
     //$fx.fxpreview();
     //$fx.preview();
 
