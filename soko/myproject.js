@@ -97,7 +97,7 @@ console.log(orientation+': '+~~(wide/100/ratio)+' x '+~~(high/100/ratio))
 
 
 //setup the project variables
-var origin = new Point(R.random_int(-wide/4, wide+wide/4), R.random_int(-high/4, high+high/4));
+var origin = new Point(R.random_int(-framewidth, wide+framewidth), R.random_int(-framewidth, high+framewidth));
 var spokes = R.random_int(6, 30)
 var wavyness = R.random_int(10, 250);
 var distribution = R.random_int(600, ~~(Math.sqrt(high*high+wide*wide)));
@@ -223,9 +223,12 @@ function rays(z){
                 p[4] = new Point(~~(distribution*.5),~~(-wavyness*((z+1)/swirly)));
                 p[5] = new Point(~~(distribution*.6),~~(wavyness*((z+1)/swirly)));
                 p[6] = new Point(~~(distribution*.7),~~(-wavyness*((z+1)/swirly)));
-                p[7] = new Point(~~(distribution*.8),~~(wavyness*((z+1)/swirly)));
-                p[8] = new Point(~~(Math.sqrt(high*high+wide*wide)),~~(-wavyness*((z+1)/swirly)));
+                p[7] = new Point(~~(distribution*.9),~~(wavyness*((z+1)/swirly)));
                 
+                p[8] = new Point(~~(Math.sqrt(high*high+wide*wide)),~~(-wavyness*((z+1)/swirly)));
+                //p[9] = new Point(~~(Math.sqrt(high*high+wide*wide)+10),~~(-wavyness*((z+1)/swirly)));
+
+
                 lines = new Path();
                 lines.add(p[0]);
                 lines.add(p[1]);
@@ -235,7 +238,8 @@ function rays(z){
                 lines.add(p[5]); 
                 lines.add(p[6]); 
                 lines.add(p[7]); 
-                lines.add(p[8]);        
+                lines.add(p[8]); 
+                //lines.add(p[9]);        
                 lines.simplify(); lines.smooth(); 
 
                 
