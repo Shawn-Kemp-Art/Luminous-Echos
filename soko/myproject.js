@@ -468,7 +468,7 @@ document.addEventListener('keypress', (event) => {
             }
 
             if(event.key == "j") {
-            canvas.toBlob(function(blob) {saveAs(blob, $fx.hash+'.jpg');});
+            canvas.toBlob(function(blob) {saveAs(blob, $fx.hash+'.jpg');}, 'image/jpg');
             }
 
         //Export colors as txt
