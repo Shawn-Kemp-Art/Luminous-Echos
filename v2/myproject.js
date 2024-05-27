@@ -104,7 +104,7 @@ var distribution = R.random_int(600, ~~(Math.sqrt(high*high+wide*wide)));
 var swirly = R.random_int(5, 50);
 var dripRadius = R.random_int(0, 9); 
 var dripfrequency = R.random_num(.1,.6);
-var dripstart = R.random_int(2, 4);
+var dripstart = R.random_int(1, 4);
 
 console.log("Origin: "+origin);
 console.log("Spokes: "+spokes);
@@ -416,8 +416,9 @@ function hanger (z){
 var interactiontext = "Interactions\nb = Blueprint mode\nv = Export SVG\np = Export PNG\nc = Export colors as TXT\ne = Show layers\nf = Remove frame\n"
 
 view.onDoubleClick = function(event) {
-    console.log("png")
-    canvas.toBlob(function(blob) {saveAs(blob, tokenData.hash+'.png');});
+    
+    console.log(project.exportJSON());
+    //canvas.toBlob(function(blob) {saveAs(blob, tokenData.hash+'.png');});
 };
 
 document.addEventListener('keypress', (event) => {
@@ -441,7 +442,6 @@ document.addEventListener('keypress', (event) => {
         }
         
         if(event.key == "F") {
-            floatingframe();
             frameColor = prompt("Frame color(hex)", frameColor);
             floatingframe();
             }    
@@ -449,11 +449,23 @@ document.addEventListener('keypress', (event) => {
 
        //Format for Lightburn
        if(event.key == "b") {
-        //floatingframe();
             for (z=0;z<stacks;z++){
                 sheet[z].style = {fillColor: null,strokeWidth: .1,strokeColor: lightburn[stacks-z-1].Hex,shadowColor: null,shadowBlur: null,shadowOffset: null}
                 sheet[z].selected = true;}
             }
+
+       //Format for plotting
+       if(event.key == "l") {
+            for (z=0;z<stacks;z++){
+                if (z<stacks-1){
+                    for (zs=z+1;zs<stacks;zs++){
+                        sheet[z] = sheet[z].subtract(sheet[zs]);
+                        sheet[z].previousSibling.remove();
+                    }
+                } 
+                console.log("optimizing")
+            }
+        }
 
         //new hash
         if(event.key == " ") {
@@ -491,7 +503,7 @@ document.addEventListener('keypress', (event) => {
 
        //Explode the layers     
        if(event.key == "e") {   
-            floatingframe();  
+            //floatingframe();  
             h=0;t=0;maxwidth=3000;
                for (z=0; z<sheet.length; z++) { 
                sheet[z].scale(1000/2300)   
