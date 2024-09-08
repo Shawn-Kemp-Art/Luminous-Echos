@@ -25,47 +25,172 @@ var seed = Math.floor($fx.rand()*10000000000000000);
 var noise = new perlinNoise3d();
 noise.noiseSeed(seed);
 
+//FXparams
 
-//read in query strings
-var qh = new URLSearchParams(window.location.search).get('h'); //high
-var qw = new URLSearchParams(window.location.search).get('w'); //wide
-var qs = new URLSearchParams(window.location.search).get('scale'); //scale
-var qfw = new URLSearchParams(window.location.search).get('framewidth'); //Framewidth
-var ql = new URLSearchParams(window.location.search).get('layers'); //layers
-var qpw  = new URLSearchParams(window.location.search).get('lw'); //read explode width query string
-var qph  = new URLSearchParams(window.location.search).get('lh'); //read explode height query string
-var qo = new URLSearchParams(window.location.search).get('orientation'); //change orientation
-var qm = new URLSearchParams(window.location.search).get('cutmarks'); //any value turns on cutmarks and hangers
-var qc = new URLSearchParams(window.location.search).get('colors'); // number of colors
+definitions = [
+    {
+        id: "layers",
+        name: "Layers",
+        type: "number",
+        default: 12,
+        options: {
+            min: 12,
+            max: 12,
+            step: 1,
+        },  
+    },
+    {
+        id: "orientation",
+        name: "Orientation",
+        type: "select",
+        default: "portrait",
+        options: {options: ["portrait", "landscape", "square"]},
+    },
+    {
+        id: "size",
+        name: "Size",
+        type: "select",
+        default: "2",
+        options: {options: ["1", "2", "3"]},
+    },
+    {
+        id: "colors",
+        name: "Max # of colors",
+        type: "number",
+        default: 2,
+        options: {
+            min: 1,
+            max: 12,
+            step: 1,
+        },  
+    },
+    {
+        id: "pallete",
+        name: "Pallete",
+        type: "select",
+        default: "AllColors",
+        options: {options: ["AllColors", "SunsetGlow", "OceanBreeze", "NaturalCalm", "VintageChic", "BoldVibrant", "WintersTwilight", "WarmSpice", "SoftPetals", "FreshGreens", "MonochromeElegance", "TropicalSplash", "AutumnWarmth", "ElegantMonochrome", "SunKissedEarth", "CitrusPunch", "FrostySky", "BoldNights", "MutedElegance", "SunnyMeadows", "UrbanContrast"]},
+    },
+    {
+        id: "framecolor",
+        name: "Frame color",
+        type: "select",
+        default: "White",
+        options: {options: ["Random","White","Mocha"]},
+    },
+    {
+        id: "spokes",
+        name: "Rays",
+        type: "number",
+        default: 8,
+        options: {
+            min: 6,
+            max: 40,
+            step: 1,
+        },  
+    },
+    {
+        id: "wavyness",
+        name: "Wavyness",
+        type: "number",
+        default: 50,
+        options: {
+            min: 10,
+            max: 250,
+            step: 1,
+        },  
+    },
+    {
+        id: "swirly",
+        name: "Swirlyness",
+        type: "number",
+        default: 15,
+        options: {
+            min: 5,
+            max: 50,
+            step: 1,
+        },  
+    },
+    {
+        id: "dripfrequency",
+        name: "Chance of drips",
+        type: "number",
+        default: .5,
+        options: {
+            min: 0,
+            max: 1,
+            step: .01,
+        },  
+    },
+    {
+        id: "dripstart",
+        name: "Drip begin",
+        type: "number",
+        default: 2,
+        options: {
+            min: 1,
+            max: 9,
+            step: 1,
+        },  
+    },
+    {
+        id: "dripRadius",
+        name: "Drip end",
+        type: "number",
+        default: 6,
+        options: {
+            min: 1,
+            max: 10,
+            step: 1,
+        },  
+    },
+    {
+        id: "originx",
+        name: "Origin X",
+        type: "number",
+        options: {
+            min: 0,
+            max: 800,
+            step: 1,
+        },  
+    },
+    {
+        id: "originy",
+        name: "Origin Y",
+        type: "number",
+        options: {
+            min: 0,
+            max: 1000,
+            step: 1,
+        },  
+    },
+    
+    
+   
+    ]
 
-var frC = R.random_int(1, 4); //random frame color white, mocha, or rainbow
-var orient=R.random_int(1, 4); // decide on orientation 
-var halfsize = R.random_int(1, 6);
+    frameColors
+
+$fx.params(definitions)
+var scale = $fx.getParam('size');
+var stacks = $fx.getParam('layers')
+var numofcolors = $fx.getParam('colors');
+
 
 //Set the properties for the artwork where 100 = 1 inch
 var wide = 800; 
-if (halfsize == 1 && orient != 2){wide=400;}
-    if (qw){wide=qw*100};
 var high = 1000; 
-    if (qh){high=qh*100};
 
-var scale = 2; 
-    if (qs){scale=qs};
 
 var ratio = 1/scale;//use 1/4 for 32x40 - 1/3 for 24x30 - 1/2 for 16x20 - 1/1 for 8x10
-
 var minOffset = ~~(7*ratio); //this is aproximatly .125"
 var framewidth = ~~(R.random_int(125, 125)*ratio); 
-    if (qfw){framewidth=qfw};
-
 var framradius = 0;
-var stacks = R.random_int(12, 12);
-    if (ql){stacks=parseInt(ql)};
-console.log(stacks+" layers");
+
 
 // Set a canvas size for when layers are exploded where 100=1in
-var panelWide = 1600; if (qpw){panelWide=parseInt(qpw)};  
-var panelHigh = 2000; if (qph){panelHigh=parseInt(qph)}; 
+var panelWide = 1600; 
+var panelHigh = 2000; 
  
 paper.view.viewSize.width = 2400;
 paper.view.viewSize.height = 2400;
@@ -76,36 +201,36 @@ var colors = []; var palette = [];
 var woodframe = new Path();var framegap = new Path();
 var fColor = frameColors[R.random_int(0, frameColors.length-1)];
 var frameColor = fColor.Hex;
-console.log("Frame Color: "+fColor.Name);
+//Pick frame color
 
-numofcolors = R.random_int(2, stacks/2);; //Sets the number of colors to pick for the pallete
-if (qc){numofcolors = qc};
-console.log(numofcolors+" colors");
+
 
 //adjust the canvas dimensions
 w=wide;h=high;
 var orientation="Portrait";
-
-if (orient==1){wide = h;high = w;orientation="Landscape";};
-if (orient==2){wide = w;high = w;orientation="Square";};
-if (orient==3){wide = w;high = h;orientation="Portrait";};
-
-if (qo=="w"){wide = h;high = w;orientation="Landscape";};
-if (qo=="s"){wide = w;high = w;orientation="Square";};
-if (qo=="t"){wide = w;high = h;orientation="Portrait";};
-console.log(orientation+': '+~~(wide/100/ratio)+' x '+~~(high/100/ratio))   
-
+ 
+if ($fx.getParam('orientation')=="landscape"){wide = h;high = w;orientation="Landscape";};
+if ($fx.getParam('orientation')=="square"){wide = w;high = w;orientation="Square";};
+if ($fx.getParam('orientation')=="portrait"){wide = w;high = h;orientation="Portrait";};
 
 //setup the project variables
 var origin = new Point(R.random_int(-framewidth, wide+framewidth), R.random_int(-framewidth, high+framewidth));
-var spokes = R.random_int(6, 30)
-var wavyness = R.random_int(10, 250);
 var distribution = R.random_int(600, ~~(Math.sqrt(high*high+wide*wide)));
-var swirly = R.random_int(5, 50);
-var dripRadius = R.random_int(0, 9); 
-var dripfrequency = R.random_num(.1,.6);
-var dripstart = R.random_int(1, 4);
 
+
+var origin = new Point($fx.getParam('originx'), $fx.getParam('originy'));
+var spokes = $fx.getParam('spokes');
+var wavyness = $fx.getParam('wavyness');
+var swirly = $fx.getParam('swirly');
+var dripRadius = $fx.getParam('dripRadius');
+var dripfrequency = 1-$fx.getParam('dripfrequency');
+var dripstart = $fx.getParam('dripstart');
+var palette = this[$fx.getParam('pallete')];
+
+console.log(orientation+': '+~~(wide/100/ratio)+' x '+~~(high/100/ratio))  
+console.log(stacks+" layers");
+console.log(numofcolors+" colors");
+console.log("Frame Color: "+fColor.Name);
 console.log("Origin: "+origin);
 console.log("Spokes: "+spokes);
 console.log("Wavyness: "+wavyness);
@@ -115,19 +240,15 @@ console.log("Drip Radius: "+dripRadius);
 console.log("Drip frequency: "+dripfrequency);
 console.log("Drip start: "+dripstart);
 
-//Pick layer colors from a random pallete based on tint library
-for (var c=0; c<numofcolors; c=c+1){palette[c] = tints[R.random_int(0, tints.length-1)];};    
 
 //randomly assign colors to layers
-for (var c=0; c<stacks; c=c+1){colors[c] = palette[R.random_int(0, palette.length)];};
+//for (var c=0; c<stacks; c=c+1){colors[c] = palette[R.random_int(0, palette.length)];};
 
-//or alternate colors
 p=0;for (var c=0; c<stacks; c=c+1){colors[c] = palette[p];p=p+1;if(p==palette.length){p=0};}
 
-//Pick frame color
+if ($fx.getParam('framecolor')=="White"){colors[stacks-1]={"Hex":"#FFFFFF", "Name":"Smooth White"}};
+if ($fx.getParam('framecolor')=="Mocha"){colors[stacks-1]={"Hex":"#4C4638", "Name":"Mocha"}};
 
-if (frC==1){colors[stacks-1]={"Hex":"#FFFFFF", "Name":"Smooth White"}};
-if (frC==2){colors[stacks-1]={"Hex":"#4C4638", "Name":"Mocha"}};
     
 //Set the line color
 linecolor={"Hex":"#4C4638", "Name":"Mocha"};
