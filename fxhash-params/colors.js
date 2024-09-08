@@ -227,7 +227,7 @@ var frameColors = [
 {"Hex":"#4b2110", "Name":"Burgundy"},
 ]
 
-var allColors = [
+var alColors = [
 {"Hex":"#fdf376","Name":"Buttercup"},
 {"Hex":"#c39354","Name":"Golden"},
 {"Hex":"#EEEBE8", "Name":"Alabaster"},
