@@ -169,7 +169,6 @@ definitions = [
    
     ]
 
-    frameColors
 
 $fx.params(definitions)
 var scale = $fx.getParam('size');
@@ -207,6 +206,10 @@ console.log(palette);
 
 //randomly assign colors to layers
 for (c=0; c<stacks; c=c+1){colors[c] = palette[R.random_int(0, palette.length-1)];};
+
+//or alternate colors
+p=0;for (var c=0; c<stacks; c=c+1){colors[c] = palette[p];p=p+1;if(p==palette.length){p=0};}
+
 console.log(colors);
 //p=0;for (var c=0; c<stacks; c=c+1){colors[c] = palette[p];p=p+1;if(p==palette.length){p=0};}
 
