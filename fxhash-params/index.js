@@ -34,8 +34,8 @@ definitions = [
         type: "number",
         default: 12,
         options: {
-            min: 12,
-            max: 12,
+            min: 6,
+            max: 24,
             step: 1,
         },  
     },
@@ -43,8 +43,14 @@ definitions = [
         id: "orientation",
         name: "Orientation",
         type: "select",
-        default: "portrait",
-        options: {options: ["portrait", "landscape", "square"]},
+        options: {options: ["portrait", "landscape"]},
+    },
+    {
+        id: "aspectratio",
+        name: "Aspect ratio",
+        type: "select",
+        default: "4:5",
+        options: {options: ["1:1", "2:5","3:5","4:5","54:86"]},
     },
     {
         id: "size",
@@ -150,7 +156,7 @@ definitions = [
         type: "number",
         options: {
             min: 0,
-            max: 800,
+            max: 1000,
             step: 1,
         },  
     },
@@ -164,15 +170,24 @@ definitions = [
             step: 1,
         },  
     },
-    
-    
+    {
+        id: "matwidth",
+        name: "Mat size",
+        type: "number",
+        default: 75,
+        options: {
+            min: 50,
+            max: 200,
+            step: 10,
+        },  
+    },
    
     ]
 
 
 $fx.params(definitions)
 var scale = $fx.getParam('size');
-var stacks = 12;
+var stacks = $fx.getParam('layers');
 var numofcolors = $fx.getParam('colors');
 
 
@@ -180,13 +195,16 @@ var numofcolors = $fx.getParam('colors');
 var wide = 800; 
 var high = 1000; 
 
+if ($fx.getParam('aspectratio')== "1:1"){wide = 800; high = 800};
+if ($fx.getParam('aspectratio')== "2:5"){wide = 400; high = 1000};
+if ($fx.getParam('aspectratio')== "3:5"){wide = 600; high = 1000};
+if ($fx.getParam('aspectratio')== "4:5"){wide = 800; high = 1000};
+if ($fx.getParam('aspectratio')== "54:86"){wide = 540; high = 860};
+
 
 var ratio = 1/scale;//use 1/4 for 32x40 - 1/3 for 24x30 - 1/2 for 16x20 - 1/1 for 8x10
 var minOffset = ~~(7*ratio); //this is aproximatly .125"
-//var framewidth = ~~(R.random_int(125, 125)*ratio); 
-if (scale==1){var framewidth = 75};
-if (scale==2){var framewidth = ~~(125*ratio)};
-if (scale==3){var framewidth = ~~(175*ratio)};
+var framewidth = ~~($fx.getParam('matwidth')*ratio*scale); 
 var framradius = 0;
 
 
@@ -211,7 +229,6 @@ for (c=0; c<stacks; c=c+1){colors[c] = palette[R.random_int(0, palette.length-1)
 p=0;for (var c=0; c<stacks; c=c+1){colors[c] = palette[p];p=p+1;if(p==palette.length){p=0};}
 
 console.log(colors);
-//p=0;for (var c=0; c<stacks; c=c+1){colors[c] = palette[p];p=p+1;if(p==palette.length){p=0};}
 
 if ($fx.getParam('framecolor')=="White"){colors[stacks-1]={"Hex":"#FFFFFF", "Name":"Smooth White"}};
 if ($fx.getParam('framecolor')=="Mocha"){colors[stacks-1]={"Hex":"#4C4638", "Name":"Mocha"}};
@@ -226,7 +243,6 @@ w=wide;h=high;
 var orientation="Portrait";
  
 if ($fx.getParam('orientation')=="landscape"){wide = h;high = w;orientation="Landscape";};
-if ($fx.getParam('orientation')=="square"){wide = w;high = w;orientation="Square";};
 if ($fx.getParam('orientation')=="portrait"){wide = w;high = h;orientation="Portrait";};
 
 //setup the project variables
@@ -238,7 +254,6 @@ var swirly = $fx.getParam('swirly');
 var dripRadius = $fx.getParam('dripRadius');
 var dripfrequency = 1-$fx.getParam('dripfrequency');
 var dripstart = $fx.getParam('dripstart');
-
 
 console.log(orientation+': '+~~(wide/100/ratio)+' x '+~~(high/100/ratio))  
 console.log(stacks+" layers");
@@ -253,10 +268,6 @@ console.log("Drip Radius: "+dripRadius);
 console.log("Drip frequency: "+dripfrequency);
 console.log("Drip start: "+dripstart);
 
-
-
-
-    
 //Set the line color
 linecolor={"Hex":"#4C4638", "Name":"Mocha"};
 
@@ -265,10 +276,7 @@ linecolor={"Hex":"#4C4638", "Name":"Mocha"};
 
 
 sheet = []; //This will hold each layer
-
-
 var px=0;var py=0;var pz=0;var prange=.1; 
-
 var center = new Point(wide/2,high/2)
 var longestDim = wide;if (wide<high){longestDim=high;}
 
@@ -284,9 +292,6 @@ for (z = 0; z < stacks; z++) {
         if(z<stacks-1){
             if (z==stacks-2){oset = minOffset}else{oset = ~~(minOffset*(stacks-z-1))}
             rays(z);
-            
-
-
         }
         
     frameIt(z);// finish the layer with a final frame cleanup 
@@ -300,11 +305,6 @@ for (z = 0; z < stacks; z++) {
     var group = new Group(sheet[z]);
     
     console.log(z)//Show layer completed in console
-
-
-    
-
-    
     
 }//end z loop
 
@@ -325,8 +325,8 @@ for (z = 0; z < stacks; z++) {
     $fx.features(features);
 
     //floatingframe();
-    upspirestudio(features); //#render and send features to upspire.studio
-    //$fx.fxpreview();
+    //upspirestudio(features); //#render and send features to upspire.studio
+
     //$fx.preview();
 
       var finalTime = new Date().getTime();
@@ -343,8 +343,6 @@ for (z = 0; z < stacks; z++) {
 
 //vvvvvvvvvvvvvvv PROJECT FUNCTIONS vvvvvvvvvvvvvvv 
  
-
-
 function rays(z){
             p = [];
             for (l=0; l<spokes; l++){
@@ -355,10 +353,9 @@ function rays(z){
                 p[4] = new Point(~~(distribution*.5),~~(-wavyness*((z+1)/swirly)));
                 p[5] = new Point(~~(distribution*.6),~~(wavyness*((z+1)/swirly)));
                 p[6] = new Point(~~(distribution*.7),~~(-wavyness*((z+1)/swirly)));
-                p[7] = new Point(~~(distribution*.9),~~(wavyness*((z+1)/swirly)));
-                
+                p[7] = new Point(~~(distribution*1.1),~~(wavyness*((z+1)/swirly)));
                 p[8] = new Point(~~(Math.sqrt(high*high+wide*wide)),~~(-wavyness*((z+1)/swirly)));
-                //p[9] = new Point(~~(Math.sqrt(high*high+wide*wide)+10),~~(-wavyness*((z+1)/swirly)));
+                p[9] = new Point(~~(Math.sqrt(high*high+wide*wide)+10),~~(-wavyness*((z+1)/swirly)));
 
 
                 lines = new Path();
@@ -371,7 +368,7 @@ function rays(z){
                 lines.add(p[6]); 
                 lines.add(p[7]); 
                 lines.add(p[8]); 
-                //lines.add(p[9]);        
+                lines.add(p[9]);        
                 lines.simplify(); lines.smooth(); 
 
                 
