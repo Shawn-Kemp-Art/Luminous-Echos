@@ -53,7 +53,7 @@ definitions = [
         name: "Aspect ratio",
         type: "select",
         default: "4:5",
-        options: {options: ["1:1", "2:5","3:5","4:5","54:86"]},
+        options: {options: ["1:1", "2:5","3:5","4:5","54:86","296:420"]},
     },
     {
         id: "size",
@@ -203,6 +203,7 @@ if ($fx.getParam('aspectratio')== "2:5"){wide = 400; high = 1000};
 if ($fx.getParam('aspectratio')== "3:5"){wide = 600; high = 1000};
 if ($fx.getParam('aspectratio')== "4:5"){wide = 800; high = 1000};
 if ($fx.getParam('aspectratio')== "54:86"){wide = 540; high = 860};
+if ($fx.getParam('aspectratio')== "296:420"){wide =705; high = 1000};
 
 
 var ratio = 1/scale;//use 1/4 for 32x40 - 1/3 for 24x30 - 1/2 for 16x20 - 1/1 for 8x10
@@ -488,8 +489,6 @@ function frameIt(z){
         //Make sure there is still a solid frame
         var outsideframe = new Path.Rectangle(new Point(0, 0),new Size(wide, high), framradius)
         var insideframe = new Path.Rectangle(new Point(framewidth, framewidth),new Size(wide-framewidth*2, high-framewidth*2)) 
-        //var outsideframe = new Path.Circle(new Point(wide/2, wide/2),wide/2);
-        //var insideframe = new Path.Circle(new Point(wide/2, wide/2),wide/2-framewidth);
 
         var frame = outsideframe.subtract(insideframe);
         outsideframe.remove();insideframe.remove();
@@ -542,10 +541,10 @@ function hanger (z){
 
 
 //--------- Interaction functions -----------------------
-var interactiontext = "Interactions\nb = Blueprint mode\nv = Export SVG\np = Export PNG\nc = Export colors as TXT\ne = Show layers\nf = Remove frame\n"
+var interactiontext = "Interactions\nB = Blueprint mode\nV = Export SVG\nP = Export PNG\nC = Export colors as TXT\nE = Show layers\nF = Add floating frame\nL = Format for plotting"
 
 view.onDoubleClick = function(event) {
-    
+    alert(interactiontext);
     console.log(project.exportJSON());
     //canvas.toBlob(function(blob) {saveAs(blob, tokenData.hash+'.png');});
 };
@@ -586,7 +585,13 @@ document.addEventListener('keypress', (event) => {
 
        //Format for plotting
        if(event.key == "l") {
-        fileName = "Plotting-"+$fx.hash;
+            fileName = "Plotting-"+$fx.hash;
+
+            for (z=0;z<stacks;z++){
+            sheet[z].style = {fillColor: null,strokeWidth: .1,strokeColor: plottingColors[stacks-z-1].Hex,shadowColor: null,shadowBlur: null,shadowOffset: null}
+            sheet[z].selected = true;
+            }
+        
             for (z=0;z<stacks;z++){
                 if (z<stacks-1){
                     for (zs=z+1;zs<stacks;zs++){
