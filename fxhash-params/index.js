@@ -436,6 +436,7 @@ function floatingframe(){
         var framegroup = new Group(woodframe);
         woodframe.style = {fillColor: frameColor, strokeColor: "#1A1A1A", strokeWidth: 2*ratio,shadowColor: new Color(0,0,0,[0.5]),shadowBlur: 20,shadowOffset: new Point(10*2.2, 10*2.2)};
     } else {woodframe.removeChildren()} 
+    fileName = "Framed-"+$fx.hash;
 }
 
 
@@ -566,6 +567,7 @@ document.addEventListener('keypress', (event) => {
 
         if(event.key == "f") {
             floatingframe();
+            
         }
         
         if(event.key == "F") {
@@ -584,6 +586,7 @@ document.addEventListener('keypress', (event) => {
 
        //Format for plotting
        if(event.key == "l") {
+        fileName = "Plotting-"+$fx.hash;
             for (z=0;z<stacks;z++){
                 if (z<stacks-1){
                     for (zs=z+1;zs<stacks;zs++){
@@ -608,25 +611,18 @@ document.addEventListener('keypress', (event) => {
              
         //Save as PNG
         if(event.key == "p") {
-            canvas.toBlob(function(blob) {saveAs(blob, $fx.hash+'.png');});
-            }
-
-            if(event.key == "j") {
-            canvas.toBlob(function(blob) {saveAs(blob, $fx.hash+'.jpg');}, 'image/jpg');
+            canvas.toBlob(function(blob) {saveAs(blob, fileName+'.png');});
             }
 
         //Export colors as txt
         if(event.key == "c") {
-            var key = [];
-            for (l=stacks;l>0;l--){
-                key[stacks-l] =  colors[l-1].Name;
-            }; 
-            console.log(key.reverse())
-            var content = JSON.stringify(key.reverse())
-            var filename = $fx.hash + ".txt";
+            content = JSON.stringify(features,null,2);
+            console.log(content);
+            var filename = "Colors-"+$fx.hash + ".txt";
             var blob = new Blob([content], {type: "text/plain;charset=utf-8"});
             saveAs(blob, filename);
             }
+
 
 
        //Explode the layers     
